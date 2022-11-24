@@ -61,9 +61,9 @@ class UserController extends Controller
                 'password' => 'required'
             ]);
 
-            $credentials = $request(['email', 'password']);
+            $credentials = request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
-                return Response::error(null, 'Unauthorized', 500);
+                return Response::error([], 'Unauthorized', 500);
             }
 
             $user = User::where('email', $request->email)->first();
@@ -78,9 +78,9 @@ class UserController extends Controller
                 'access_token' => $accessToken,
                 'token_type' => 'Bearer',
                 'user' => $user,
-            ]);
+            ], 'Login OK');
         } catch (Exception $error) {
-            return Response::error(null, $error->getMessage(), 500);
+            return Response::error([], $error->getMessage(), 500);
         }
     }
 }
