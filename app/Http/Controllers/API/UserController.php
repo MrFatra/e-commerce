@@ -53,7 +53,8 @@ class UserController extends Controller
         }
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         try {
             $request->validate([
                 'email' => 'email|required',
@@ -62,14 +63,24 @@ class UserController extends Controller
 
             $credentials = $request(['email', 'password']);
             if (!Auth::attempt($credentials)) {
-                return Response::error(null, 'Unauthorized/Invalid Credentials', 500);
+                return Response::error(null, 'Unauthorized', 500);
             }
 
             $user = User::where('email', $request->email)->first();
 
-            if (!Hash::check($request->email, $user->password) {
-
+            if (!Hash::check($request->password, $user->password)) {
+                throw new Exception('Invalid Credentials');
             }
-        } 
+
+            $accessToken = $user->createToken('authToken')->plainTextToken;
+
+            return Response::success([
+                'access_token' => $accessToken,
+                'token_type' => 'Bearer',
+                'user' => $user,
+            ]);
+        } catch (Exception $error) {
+            return Response::error(null, $error->getMessage(), 500);
+        }
     }
 }
