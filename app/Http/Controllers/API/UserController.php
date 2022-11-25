@@ -83,4 +83,9 @@ class UserController extends Controller
             return Response::error([], $error->getMessage(), 500);
         }
     }
+
+    public function auth(Request $request)
+    {
+        return Response::success($request->user(), 'User Data OK');
+    }
 }
